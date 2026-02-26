@@ -1,8 +1,8 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { Layout } from "./Layout";
-import { PlanPage } from "@/pages/plan/PlanPage";
-import { ExecutePage } from "@/pages/execute/ExecutePage";
-import { ReflectPage } from "@/pages/reflect/ReflectPage";
+import { PlanPage } from "@/pages/PlanPage";
+import { ExecutePage } from "@/pages/ExecutePage";
+import { ReflectPage } from "@/pages/ReflectPage";
 
 export const router = createBrowserRouter([
   {
