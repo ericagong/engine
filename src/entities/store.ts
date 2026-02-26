@@ -1,14 +1,19 @@
 import { create } from "zustand";
+import { immer } from "zustand/middleware/immer";
+import type {} from "zustand/middleware/immer";
+import type { StateCreator } from "zustand/vanilla";
 import type { FlowState } from "./types";
-import { createActionSlice, type ActionSlice } from "./action-slice";
-import { createStepSlice, type StepSlice } from "./step-slice";
-import { createReorderSlice, type ReorderSlice } from "./reorder-slice";
+import type { ActionSlice } from "./action-slice";
+import type { StepSlice } from "./step-slice";
+import type { ReorderSlice } from "./reorder-slice";
+import { createActionSlice } from "./action-slice";
+import { createStepSlice } from "./step-slice";
+import { createReorderSlice } from "./reorder-slice";
 
-export { findSectionByActionId } from "./reorder-slice";
+export type FlowStore = FlowState & ActionSlice & StepSlice & ReorderSlice;
 
-// 빈 초기 상태
 const initialState: FlowState = {
-  sections: {
+  sectionsByKey: {
     current: [],
     queue: [],
     keep: [],
@@ -16,13 +21,14 @@ const initialState: FlowState = {
     backlog: [],
   },
   actionsById: {},
+  stepsById: {},
 };
 
-type FlowStore = FlowState & ActionSlice & StepSlice & ReorderSlice;
-
-export const useFlowStore = create<FlowStore>()((...args) => ({
+const flowInitializer = immer<FlowStore>((...args) => ({
   ...initialState,
   ...createActionSlice(...args),
   ...createStepSlice(...args),
   ...createReorderSlice(...args),
-}));
+})) as unknown as StateCreator<FlowStore>;
+
+export const useFlowStore = create<FlowStore>()(flowInitializer);

@@ -23,9 +23,7 @@ export function StepDndContext({
   stepIds: string[];
   children: ReactNode;
 }) {
-  const reorderStepsWithinAction = useFlowStore(
-    (s) => s.reorderStepsWithinAction,
-  );
+  const moveStep = useFlowStore((s) => s.moveStep);
   const dndId = useId();
 
   const sensors = useSensors(
@@ -47,11 +45,10 @@ export function StepDndContext({
     )
       return;
 
-    const oldIndex = stepIds.indexOf(String(active.id));
     const newIndex = stepIds.indexOf(String(over.id));
-    if (oldIndex === -1 || newIndex === -1) return;
+    if (newIndex === -1) return;
 
-    reorderStepsWithinAction(actionId, oldIndex, newIndex);
+    moveStep(String(active.id), newIndex);
   };
 
   return (

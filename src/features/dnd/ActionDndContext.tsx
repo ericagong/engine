@@ -9,7 +9,7 @@ import {
   type DragStartEvent,
   type DragEndEvent,
 } from "@dnd-kit/core";
-import { useFlowStore, findSectionByActionId } from "@/entities/store";
+import { useFlowStore } from "@/entities/store";
 import type { DndData } from "./types";
 
 type ActionDndContextProps = {
@@ -21,10 +21,8 @@ export function ActionDndContext({
   children,
   renderOverlay,
 }: ActionDndContextProps) {
-  const sections = useFlowStore((s) => s.sections);
-  const reorderActionWithinSection = useFlowStore(
-    (s) => s.reorderActionWithinSection,
-  );
+  const moveAction = useFlowStore((s) => s.moveAction);
+
   const moveActionToSection = useFlowStore((s) => s.moveActionToSection);
 
   const [activeActionId, setActiveActionId] = useState<string | null>(null);
@@ -54,7 +52,8 @@ export function ActionDndContext({
     const overData = over.data.current as DndData | undefined;
 
     const activeId = String(active.id);
-    const fromSection = findSectionByActionId(sections, activeId);
+    const state = useFlowStore.getState();
+    const fromSection = state.actionsById[activeId]?.sectionKey ?? null;
     if (!fromSection) return;
 
     // over 대상이 action인 경우
@@ -63,16 +62,15 @@ export function ActionDndContext({
 
       if (fromSection === toSection) {
         // 같은 섹션 내 순서 변경
-        const ids = sections[fromSection];
-        const oldIndex = ids.indexOf(activeId);
-        const newIndex = ids.indexOf(String(over.id));
-        if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
-          reorderActionWithinSection(fromSection, oldIndex, newIndex);
+        const actionIds = state.sectionsByKey[fromSection];
+        const newIndex = actionIds.indexOf(String(over.id));
+        if (newIndex !== -1 && activeId !== String(over.id)) {
+          moveAction(activeId, newIndex);
         }
       } else {
         // 다른 섹션으로 이동
-        const toIndex = sections[toSection].indexOf(String(over.id));
-        moveActionToSection(activeId, fromSection, toSection, toIndex);
+        const toIndex = state.sectionsByKey[toSection].indexOf(String(over.id));
+        moveActionToSection(activeId, toSection, toIndex);
       }
       return;
     }
@@ -81,7 +79,7 @@ export function ActionDndContext({
     if (overData?.type === "section-top") {
       const toSection = overData.section;
       if (fromSection === toSection) return;
-      moveActionToSection(activeId, fromSection, toSection, 0);
+      moveActionToSection(activeId, toSection, 0);
       return;
     }
 
@@ -91,9 +89,8 @@ export function ActionDndContext({
       if (fromSection === toSection) return;
       moveActionToSection(
         activeId,
-        fromSection,
         toSection,
-        sections[toSection].length,
+        state.sectionsByKey[toSection].length,
       );
     }
   };
@@ -107,8 +104,6 @@ export function ActionDndContext({
       onDragEnd={handleDragEnd}
     >
       {children}
-
-      {/* DragOverlay: 드래그 중인 Action 미리보기 */}
       <DragOverlay dropAnimation={null}>
         {activeActionId && renderOverlay ? renderOverlay(activeActionId) : null}
       </DragOverlay>

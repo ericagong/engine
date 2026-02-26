@@ -10,32 +10,31 @@ import {
   InputGroupInput,
 } from "@/shared/ui/input-group";
 import { useFlowStore } from "@/entities/store";
-import { MAX_STEPS_PER_ACTION } from "@/entities/types";
 import { StepDndContext } from "@/features/dnd/StepDndContext";
 import { SortableStep } from "@/features/dnd/SortableStep";
 import { StepItem } from "./StepItem";
 
+const MAX_STEPS_PER_ACTION = 3;
+
 export function ActionCard({ actionId }: { actionId: string }) {
   const action = useFlowStore((s) => s.actionsById[actionId]);
-  const toggleActionDone = useFlowStore((s) => s.toggleActionDone);
-  const updateActionContent = useFlowStore((s) => s.updateActionContent);
-  const initializeSteps = useFlowStore((s) => s.initializeSteps);
-  const removeEmptyAction = useFlowStore((s) => s.removeEmptyAction);
+  const updateAction = useFlowStore((s) => s.updateAction);
+  const createStep = useFlowStore((s) => s.createStep);
 
   const [stepsExpanded, setStepsExpanded] = useState(false);
 
   if (!action) return null;
 
   const toggleStepsPanel = () => {
-    if (action.steps.length === 0) {
-      initializeSteps(actionId, MAX_STEPS_PER_ACTION);
+    if (action.stepIds.length === 0) {
+      for (let i = 0; i < MAX_STEPS_PER_ACTION; i++) {
+        createStep(actionId);
+      }
       setStepsExpanded(true);
     } else {
       setStepsExpanded((prev) => !prev);
     }
   };
-
-  const stepIds = action.steps.map((s) => s.id);
 
   return (
     <Card className="group/card">
@@ -46,7 +45,9 @@ export function ActionCard({ actionId }: { actionId: string }) {
             <Checkbox
               className="rounded-[2px]"
               checked={action.done}
-              onCheckedChange={() => toggleActionDone(actionId)}
+              onCheckedChange={() =>
+                updateAction(actionId, { done: !action.done })
+              }
               aria-label="완료 토글"
             />
           </InputGroupAddon>
@@ -56,8 +57,9 @@ export function ActionCard({ actionId }: { actionId: string }) {
             }`}
             value={action.content}
             placeholder="Action을 정의해주세요."
-            onChange={(e) => updateActionContent(actionId, e.target.value)}
-            onBlur={() => removeEmptyAction(actionId)}
+            onChange={(e) =>
+              updateAction(actionId, { content: e.target.value })
+            }
             onKeyDown={(e) => {
               if (e.key === "Enter") e.currentTarget.blur();
             }}
@@ -85,19 +87,14 @@ export function ActionCard({ actionId }: { actionId: string }) {
       <Collapsible open={stepsExpanded} onOpenChange={setStepsExpanded}>
         <CollapsibleContent>
           <CardContent className="flex flex-col pl-5 pr-3 pb-2 pt-3">
-            <StepDndContext actionId={actionId} stepIds={stepIds}>
-              {action.steps.map((step, i) => (
-                <SortableStep
-                  key={step.id}
-                  actionId={actionId}
-                  stepId={step.id}
-                >
+            <StepDndContext actionId={actionId} stepIds={action.stepIds}>
+              {action.stepIds.map((stepId, i) => (
+                <SortableStep key={stepId} actionId={actionId} stepId={stepId}>
                   <StepItem
-                    actionId={actionId}
-                    stepId={step.id}
+                    stepId={stepId}
                     isFirst={i === 0}
-                    isLast={i === action.steps.length - 1}
-                    prevDone={i > 0 ? action.steps[i - 1].done : false}
+                    isLast={i === action.stepIds.length - 1}
+                    prevStepId={i > 0 ? action.stepIds[i - 1] : null}
                   />
                 </SortableStep>
               ))}

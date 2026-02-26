@@ -1,24 +1,28 @@
+export type ActionId = string;
+export type StepId = string;
+
+export type SectionKey = "current" | "queue" | "keep" | "try" | "backlog";
+
 export type Step = {
-  id: string;
+  id: StepId;
+  actionId: ActionId;
   content: string;
   completion: string;
   done: boolean;
 };
 
 export type Action = {
-  id: string;
+  id: ActionId;
+  sectionKey: SectionKey;
   content: string;
-  steps: Step[];
+  stepIds: StepId[];
   done: boolean;
 };
 
-export type SectionKey = "current" | "queue" | "keep" | "try" | "backlog";
-
 export type FlowState = {
-  sections: Record<SectionKey, string[]>;
-  actionsById: Record<string, Action>;
+  sectionsByKey: Record<SectionKey, ActionId[]>;
+  actionsById: Record<ActionId, Action>;
+  stepsById: Record<StepId, Step>;
 };
 
 export type Phase = "plan" | "execute" | "reflect";
-
-export const MAX_STEPS_PER_ACTION = 3;

@@ -17,7 +17,7 @@ export function SortableAction({
   sectionKey: SectionKey;
   children: ReactNode;
 }) {
-  const removeAction = useFlowStore((s) => s.removeAction);
+  const deleteAction = useFlowStore((s) => s.deleteAction);
 
   const {
     attributes,
@@ -79,7 +79,7 @@ export function SortableAction({
         variant="ghost"
         size="icon-xs"
         className="absolute right-2 top-[18px] z-10 opacity-0 transition-opacity hover:text-destructive group-hover/action:opacity-60"
-        onClick={() => removeAction(actionId)}
+        onClick={() => deleteAction(actionId)}
         aria-label="Action 삭제"
         tabIndex={-1}
       >

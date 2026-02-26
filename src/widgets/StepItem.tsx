@@ -11,23 +11,21 @@ const PROGRESS_LINE_ACTIVE = "border-blue-400";
 const PROGRESS_LINE_INACTIVE = "border-muted-foreground/30";
 
 export function StepItem({
-  actionId,
   stepId,
   isFirst,
   isLast,
-  prevDone,
+  prevStepId,
 }: {
-  actionId: string;
   stepId: string;
   isFirst: boolean;
   isLast: boolean;
-  prevDone: boolean;
+  prevStepId: string | null;
 }) {
-  const step = useFlowStore((s) =>
-    s.actionsById[actionId]?.steps.find((st) => st.id === stepId),
+  const step = useFlowStore((s) => s.stepsById[stepId]);
+  const prevDone = useFlowStore((s) =>
+    prevStepId ? (s.stepsById[prevStepId]?.done ?? false) : false,
   );
-  const updateStepContent = useFlowStore((s) => s.updateStepContent);
-  const toggleStepDone = useFlowStore((s) => s.toggleStepDone);
+  const updateStep = useFlowStore((s) => s.updateStep);
 
   if (!step) return null;
 
@@ -56,7 +54,7 @@ export function StepItem({
         <Checkbox
           className="relative z-10 bg-background"
           checked={step.done}
-          onCheckedChange={() => toggleStepDone(actionId, stepId)}
+          onCheckedChange={() => updateStep(stepId, { done: !step.done })}
           aria-label="단계 완료 토글"
         />
       </InputGroupAddon>
@@ -67,9 +65,7 @@ export function StepItem({
           className="h-auto py-0 text-sm font-semibold"
           value={step.content}
           placeholder="Step을 정의해주세요."
-          onChange={(e) =>
-            updateStepContent(actionId, stepId, { content: e.target.value })
-          }
+          onChange={(e) => updateStep(stepId, { content: e.target.value })}
           onKeyDown={(e) => {
             if (e.key === "Enter") e.currentTarget.blur();
           }}
@@ -78,9 +74,7 @@ export function StepItem({
           className="h-auto py-0 text-xs text-muted-foreground"
           value={step.completion}
           placeholder="Step을 완료한 상태를 한 문장으로 정의해주세요."
-          onChange={(e) =>
-            updateStepContent(actionId, stepId, { completion: e.target.value })
-          }
+          onChange={(e) => updateStep(stepId, { completion: e.target.value })}
           onKeyDown={(e) => {
             if (e.key === "Enter") e.currentTarget.blur();
           }}

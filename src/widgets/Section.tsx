@@ -1,3 +1,4 @@
+import { useShallow } from "zustand/react/shallow";
 import type { SectionKey } from "@/entities/types";
 import { useFlowStore } from "@/entities/store";
 import { Button } from "@/shared/ui/button";
@@ -43,7 +44,10 @@ export function Section({
   sectionKey: SectionKey;
   label: string;
 }) {
-  const actionIds = useFlowStore((s) => s.sections[sectionKey]);
+  // 이미 ID 배열이므로 useShallow로 참조 안정성만 확보
+  const actionIds = useFlowStore(
+    useShallow((s) => s.sectionsByKey[sectionKey]),
+  );
   const createAction = useFlowStore((s) => s.createAction);
 
   const handleAdd = () => createAction(sectionKey);

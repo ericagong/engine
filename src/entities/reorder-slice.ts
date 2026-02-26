@@ -1,81 +1,70 @@
-import type { StateCreator } from "zustand";
-import type { FlowState, SectionKey } from "./types";
-
-// active action이 속한 섹션을 찾는 헬퍼
-export function findSectionByActionId(
-  sections: FlowState["sections"],
-  actionId: string,
-): SectionKey | null {
-  for (const [key, ids] of Object.entries(sections)) {
-    if (ids.includes(actionId)) return key as SectionKey;
-  }
-  return null;
-}
+import type { StateCreator } from "zustand/vanilla";
+import type {} from "zustand/middleware/immer";
+import type { ActionId, SectionKey, StepId } from "./types";
+import type { FlowStore } from "./store";
 
 export type ReorderSlice = {
-  reorderStepsWithinAction: (
-    actionId: string,
-    oldIndex: number,
-    newIndex: number,
-  ) => void;
-  reorderActionWithinSection: (
-    sectionKey: SectionKey,
-    oldIndex: number,
-    newIndex: number,
-  ) => void;
+  moveStep: (stepId: StepId, targetIndex: number) => void;
+  moveAction: (actionId: ActionId, targetIndex: number) => void;
   moveActionToSection: (
-    actionId: string,
-    fromSection: SectionKey,
-    toSection: SectionKey,
-    toIndex: number,
+    actionId: ActionId,
+    targetSection: SectionKey,
+    targetIndex: number,
   ) => void;
 };
 
 export const createReorderSlice: StateCreator<
-  FlowState & ReorderSlice,
-  [],
+  FlowStore,
+  [["zustand/immer", never]],
   [],
   ReorderSlice
 > = (set) => ({
-  reorderStepsWithinAction: (actionId, oldIndex, newIndex) => {
-    set((s) => {
-      const action = s.actionsById[actionId];
-      if (!action) return s;
-      const steps = [...action.steps];
-      const [moved] = steps.splice(oldIndex, 1);
-      steps.splice(newIndex, 0, moved);
-      return {
-        actionsById: {
-          ...s.actionsById,
-          [actionId]: { ...action, steps },
-        },
-      };
+  moveStep: (stepId, targetIndex) => {
+    set((draft) => {
+      const step = draft.stepsById[stepId];
+      if (!step) return;
+
+      const action = draft.actionsById[step.actionId];
+      if (!action) return;
+
+      const currIndex = action.stepIds.indexOf(stepId);
+      if (currIndex === -1) return;
+
+      action.stepIds.splice(currIndex, 1);
+      action.stepIds.splice(targetIndex, 0, stepId);
     });
   },
 
-  reorderActionWithinSection: (sectionKey, oldIndex, newIndex) => {
-    set((s) => {
-      const ids = [...s.sections[sectionKey]];
-      const [moved] = ids.splice(oldIndex, 1);
-      ids.splice(newIndex, 0, moved);
-      return {
-        sections: { ...s.sections, [sectionKey]: ids },
-      };
+  moveAction: (actionId, targetIndex) => {
+    set((draft) => {
+      const action = draft.actionsById[actionId];
+      if (!action) return;
+
+      const actionIds = draft.sectionsByKey[action.sectionKey];
+      const currActionIdx = actionIds.indexOf(actionId);
+
+      if (currActionIdx === -1) return;
+
+      actionIds.splice(currActionIdx, 1);
+      actionIds.splice(targetIndex, 0, actionId);
     });
   },
 
-  moveActionToSection: (actionId, fromSection, toSection, toIndex) => {
-    set((s) => {
-      const from = s.sections[fromSection].filter((id) => id !== actionId);
-      const to = [...s.sections[toSection]];
-      to.splice(toIndex, 0, actionId);
-      return {
-        sections: {
-          ...s.sections,
-          [fromSection]: from,
-          [toSection]: to,
-        },
-      };
+  moveActionToSection: (actionId, targetSection, targetIndex) => {
+    set((draft) => {
+      const action = draft.actionsById[actionId];
+
+      if (!action) return;
+
+      const actionIdsInCurrSection = draft.sectionsByKey[action.sectionKey];
+      const actionIdxInCurrSection = actionIdsInCurrSection.indexOf(actionId);
+
+      if (actionIdxInCurrSection === -1) return;
+
+      actionIdsInCurrSection.splice(actionIdxInCurrSection, 1);
+
+      draft.sectionsByKey[targetSection].splice(targetIndex, 0, actionId);
+      action.sectionKey = targetSection;
     });
   },
 });
