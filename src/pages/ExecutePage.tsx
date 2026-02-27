@@ -1,9 +1,9 @@
-import { BoardLayout } from "@/widgets/BoardLayout";
+import { Board } from "@/widgets/Board";
 import { Section } from "@/widgets/Section";
 
 export function ExecutePage() {
   return (
-    <BoardLayout
+    <Board
       main={
         <>
           <Section sectionKey="current" label="Current" />

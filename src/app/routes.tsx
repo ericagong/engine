@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import { Layout } from "./Layout";
+import { AppLayout } from "./AppLayout";
 import { PlanPage } from "@/pages/PlanPage";
 import { ExecutePage } from "@/pages/ExecutePage";
 import { ReflectPage } from "@/pages/ReflectPage";
@@ -7,7 +7,7 @@ import { ReflectPage } from "@/pages/ReflectPage";
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />,
+    element: <AppLayout />,
     children: [
       { index: true, element: <Navigate to="/plan" replace /> },
       { path: "plan", element: <PlanPage /> },
