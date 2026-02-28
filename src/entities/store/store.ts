@@ -2,13 +2,13 @@ import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import type {} from "zustand/middleware/immer";
 import type { StateCreator } from "zustand/vanilla";
-import type { FlowState } from "./types";
-import type { ActionSlice } from "./action-slice";
-import type { StepSlice } from "./step-slice";
-import type { ReorderSlice } from "./reorder-slice";
-import { createActionSlice } from "./action-slice";
-import { createStepSlice } from "./step-slice";
-import { createReorderSlice } from "./reorder-slice";
+import type { FlowState } from "@/entities/types";
+import type { ActionSlice } from "./actionSlice";
+import type { StepSlice } from "./stepSlice";
+import type { ReorderSlice } from "./reorderSlice";
+import { createActionSlice } from "./actionSlice";
+import { createStepSlice } from "./stepSlice";
+import { createReorderSlice } from "./reorderSlice";
 
 export type FlowStore = FlowState & ActionSlice & StepSlice & ReorderSlice;
 

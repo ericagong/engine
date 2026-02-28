@@ -1,7 +1,7 @@
-import { Board } from "@/widgets/Board";
-import { Section } from "@/widgets/Section";
+import Board from "@/features/board/Board";
+import Section from "@/features/board/Section";
 
-export function PlanPage() {
+const PlanPage = () => {
   return (
     <Board
       main={<Section sectionKey="current" label="Current" />}
@@ -14,4 +14,6 @@ export function PlanPage() {
       }
     />
   );
-}
+};
+
+export default PlanPage;

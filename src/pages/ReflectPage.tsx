@@ -1,7 +1,7 @@
-import { Board } from "@/widgets/Board";
-import { Section } from "@/widgets/Section";
+import Board from "@/features/board/Board";
+import Section from "@/features/board/Section";
 
-export function ReflectPage() {
+const ReflectPage = () => {
   return (
     <Board
       main={
@@ -19,4 +19,6 @@ export function ReflectPage() {
       }
     />
   );
-}
+};
+
+export default ReflectPage;

@@ -1,7 +1,7 @@
-import { Board } from "@/widgets/Board";
-import { Section } from "@/widgets/Section";
+import Board from "@/features/board/Board";
+import Section from "@/features/board/Section";
 
-export function ExecutePage() {
+const ExecutePage = () => {
   return (
     <Board
       main={
@@ -19,4 +19,6 @@ export function ExecutePage() {
       }
     />
   );
-}
+};
+
+export default ExecutePage;

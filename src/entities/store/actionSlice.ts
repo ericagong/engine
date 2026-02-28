@@ -1,6 +1,6 @@
 import type { StateCreator } from "zustand/vanilla";
 import type {} from "zustand/middleware/immer";
-import type { Action, SectionKey } from "./types";
+import type { Action, SectionKey } from "@/entities/types";
 import type { FlowStore } from "./store";
 import { uid } from "@/shared/lib/utils";
 

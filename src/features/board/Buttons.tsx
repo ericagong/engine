@@ -8,7 +8,7 @@ type DeleteButtonProps = {
   onClick: () => void;
 };
 
-export function DeleteButton({ onClick }: DeleteButtonProps) {
+const DeleteButton = ({ onClick }: DeleteButtonProps) => {
   return (
     <Button
       variant="ghost"
@@ -21,17 +21,14 @@ export function DeleteButton({ onClick }: DeleteButtonProps) {
       <Trash2 className="h-3.5 w-3.5" />
     </Button>
   );
-}
+};
 
 type ToggleExpandButtonProps = {
   expanded: boolean;
   onClick: () => void;
 };
 
-export function ToggleExpandButton({
-  expanded,
-  onClick,
-}: ToggleExpandButtonProps) {
+const ToggleExpandButton = ({ expanded, onClick }: ToggleExpandButtonProps) => {
   return (
     <Button
       variant="ghost"
@@ -46,7 +43,7 @@ export function ToggleExpandButton({
       )}
     </Button>
   );
-}
+};
 
 type DoneButtonProps = {
   done: boolean;
@@ -54,7 +51,7 @@ type DoneButtonProps = {
   className?: string;
 };
 
-export function DoneButton({ done, onClick, className }: DoneButtonProps) {
+const DoneButton = ({ done, onClick, className }: DoneButtonProps) => {
   return (
     <Checkbox
       className={cn("rounded-[2px]", className)}
@@ -63,26 +60,29 @@ export function DoneButton({ done, onClick, className }: DoneButtonProps) {
       aria-label="완료 토글"
     />
   );
-}
-
-type DragActiveButtonProps = {
-  handleRef: (element: HTMLElement | null) => void;
-  listeners: DraggableSyntheticListeners;
 };
 
-export function DragActiveButton({
+type DragHandleButtonProps = {
+  handleRef: (element: HTMLElement | null) => void;
+  listeners: DraggableSyntheticListeners;
+  attributes: React.HTMLAttributes<HTMLButtonElement>;
+};
+
+const DragHandleButton = ({
   handleRef,
   listeners,
-}: DragActiveButtonProps) {
+  attributes,
+}: DragHandleButtonProps) => {
   return (
     <button
       ref={handleRef}
       className="flex size-6 shrink-0 cursor-grab items-center justify-center rounded-md text-muted-foreground opacity-0 transition-opacity active:cursor-grabbing group-hover/action:opacity-60"
-      aria-label="드래그 핸들"
-      tabIndex={-1}
+      {...attributes}
       {...listeners}
     >
       <GripVertical className="h-3.5 w-3.5" />
     </button>
   );
-}
+};
+
+export { DeleteButton, ToggleExpandButton, DoneButton, DragHandleButton };

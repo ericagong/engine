@@ -1,9 +1,9 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { Button } from "@/shared/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useCurrentPhase, PHASES } from "@/entities/useCurrentPhase";
+import { useCurrentPhase, PHASES } from "@/shared/hooks/useCurrentPhase";
 
-function Navigator() {
+const Navigator = () => {
   const navigate = useNavigate();
   const phase = useCurrentPhase();
 
@@ -40,18 +40,18 @@ function Navigator() {
       </Button>
     </div>
   );
-}
+};
 
-function Logo() {
+const Logo = () => {
   return (
     <span className="ml-3 text-sm font-medium">
       <span className="mr-2">⚙️</span>
       Engine
     </span>
   );
-}
+};
 
-export function AppLayout() {
+const AppLayout = () => {
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       <header className="flex h-11 items-center border-b bg-background px-3">
@@ -63,4 +63,6 @@ export function AppLayout() {
       </main>
     </div>
   );
-}
+};
+
+export default AppLayout;
