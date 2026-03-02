@@ -22,6 +22,7 @@ const initialState: FlowState = {
   },
   actionsById: {},
   stepsById: {},
+  _hydrated: false,
 };
 
 const flowInitializer = immer<FlowStore>((...args) => ({
